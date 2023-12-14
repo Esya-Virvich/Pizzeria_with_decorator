@@ -1,0 +1,81 @@
+def receipt_decorator(func):
+    def wrapper(*args, **kwargs):
+        order_info = func(*args, **kwargs)
+        
+        print("---------- Чек ----------")
+        print("Пиццерия")
+        print("--------------------------")
+        print(f"Заказ: {order_info['order_number']}")
+        print(f"Дата: {order_info['date']}")
+        print("--------------------------")
+        for item in order_info['items']:
+            print(f"{item['name']}: ${item['price']}")
+        print("--------------------------")
+        print(f"Общая стоимость: ${order_info['total_price']}")
+        print("--------------------------")
+        
+        return order_info
+    
+    return wrapper
+
+
+@receipt_decorator
+def place_order(user, cart):
+    order_number = "номер какой-то"
+    date = "31.12.2023"
+    total_price = sum(item['price'] for item in cart)
+    
+    order_info = {
+        'order_number': order_number,
+        'date': date,
+        'items': cart,
+        'total_price': total_price
+    }
+    
+    return order_info
+
+
+def register_user():
+    name = input("Введите ваше имя: ")
+    return name
+
+
+def display_menu(menu):
+    print("Меню:")
+    for i, item in enumerate(menu, start=1):
+        print(f"{i}. {item['name']}: ${item['price']}")
+
+
+def create_order(menu):
+    cart = []
+    display_menu(menu)
+    while True:
+        choice = input("Выберите пиццу или напиток (номер пункта меню) или введите 'stop' для завершения заказа: ")
+        if choice == 'stop':
+            break
+        try:
+            choice = int(choice)
+            if 1 <= choice <= len(menu):
+                item = menu[choice-1]
+                cart.append(item)
+                print(f"{item['name']} добавлен в корзину.")
+            else:
+                print("Неверный ввод. Попробуйте снова.")
+        except ValueError:
+            print("Неверный ввод. Попробуйте снова.")
+    return cart
+
+
+# Пример использования
+menu = [
+    {"name": "Маргарита", "price": 10},
+    {"name": "Пепперони", "price": 12},
+    {"name": "Гавайская", "price": 11},
+    {"name": "BBQ Цыпленок", "price": 13},
+    {"name": "Кола", "price": 3},
+    {"name": "Апельсиновый сок", "price": 2}
+]
+
+user = register_user()
+order_cart = create_order(menu)
+order_info = place_order(user, order_cart)
